@@ -1,0 +1,36 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Build artifacts
+*.dll
+*.exe
+*.app
+*.log
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# libman / npm / nuget
+lib/
+node_modules/
+wwwroot/lib/
+
+# wwwroot içindeki kullanıcı yüklemeleri
+wwwroot/images/posts/
+wwwroot/images/profiles/
+
+# Secrets ve configler
+secrets.json
+.env
+
+# Local veritabanı dosyaları (SQLite veya local db cache)
+*.db

@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Erişim Reddedildi";
+}
+
+<div class="text-center mt-5">
+    <h2 class="text-danger">🚫 Erişim Reddedildi</h2>
+    <p>Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
+
+    @if (!(User?.Identity?.IsAuthenticated ?? false))
+    {
+        <p>
+            <a class="btn btn-primary" asp-controller="Auth" asp-action="Login">Giriş Yap</a>
+            <a class="btn btn-outline-secondary ms-2" asp-controller="Auth" asp-action="Register">Kayıt Ol</a>
+        </p>
+    }
+    else
+    {
+        <p>
+            <a class="btn btn-secondary" asp-controller="Home" asp-action="Index">Anasayfaya Dön</a>
+        </p>
+    }
+</div>

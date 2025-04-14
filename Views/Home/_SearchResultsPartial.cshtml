@@ -1,0 +1,19 @@
+@model List<AIBlog.Models.Post>
+
+@if (Model.Any())
+{
+    <ul class="list-group shadow">
+        @foreach (var post in Model)
+        {
+            <li class="list-group-item">
+                <a href="/blog/@post.Url" class="fw-bold text-decoration-none">@post.Title</a><br />
+                <small class="text-muted">📅 @post.PublishedOn.ToShortDateString()</small>
+                <p class="text-muted small">@post.Description?.Substring(0, Math.Min(post.Description.Length, 80))...</p>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="text-muted">Sonuç bulunamadı.</div>
+}

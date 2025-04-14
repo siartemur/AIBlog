@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+<h2>Kayıt Ol</h2>
+
+<form asp-action="Register" method="post" enctype="multipart/form-data" class="mt-4">
+    <input type="text" name="userName" placeholder="Kullanıcı Adı" required class="form-control mb-2" />
+    <input type="email" name="email" placeholder="E-posta" required class="form-control mb-2" />
+    <input type="password" name="password" placeholder="Şifre" required class="form-control mb-2" />
+
+    <!-- 🆕 Profil Fotoğrafı Alanı -->
+    <label class="form-label mt-2">Profil Fotoğrafı</label>
+    <input type="file" name="ProfileImage" class="form-control mb-3" />
+
+    <button type="submit" class="btn btn-success">Kayıt Ol</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="text-danger mt-3">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+<p class="mt-3">
+    Zaten hesabınız var mı? <a asp-controller="Auth" asp-action="Login">Giriş Yap</a>
+</p>

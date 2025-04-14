@@ -1,0 +1,17 @@
+@model AIBlog.Models.Post
+
+@{
+    ViewData["Title"] = "Blog Sil";
+}
+
+<h2>Bu blog yazısını silmek istediğinize emin misiniz?</h2>
+
+<div class="alert alert-warning">
+    <strong>@Model.Title</strong> başlıklı yazı kalıcı olarak silinecek.
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="PostId" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="UserPosts" class="btn btn-secondary">Vazgeç</a>
+</form>

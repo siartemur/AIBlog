@@ -1,0 +1,65 @@
+@model List<AIBlog.ViewModels.PostListViewModel>
+
+@{
+    ViewData["Title"] = "Anasayfa";
+}
+
+<div class="text-center my-5">
+    <h1 class="display-4 fw-bold">Yapay Zekanın Kalbine Hoş Geldiniz!</h1>
+    <p class="lead">En güncel AI gelişmeleri, makaleler ve teknik içerikler burada.</p>
+
+    <!-- 🔍 Arama Kutusu -->
+    <div class="d-flex justify-content-center mt-4">
+        <input type="text" id="searchInput" class="form-control w-50" placeholder="Bloglarda ara..." />
+    </div>
+    <div id="searchResults" class="mt-3 w-50 mx-auto"></div>
+
+    <a href="/Blog" class="btn btn-outline-primary btn-lg mt-4">Blogları Keşfet</a>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    @foreach (var post in Model)
+    {
+        <div class="col">
+            <a href="/blog/@post.Url" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(post.Image))
+                    {
+                        <img src="@post.Image" class="card-img-top" alt="@post.Title" style="height: 250px; object-fit: cover;">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">@post.Title</h5>
+                        <p class="card-text">@post.Description</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between text-muted small">
+                        <span>✍️ @post.AuthorName</span>
+                        <span>📅 @post.PublishedOn.ToShortDateString()</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        $('#searchInput').on('input', function () {
+            var query = $(this).val();
+
+            if (query.length >= 2) {
+                $.ajax({
+                    url: '/Home/LiveSearch',
+                    type: 'GET',
+                    data: { query: query },
+                    success: function (data) {
+                        $('#searchResults').html(data);
+                    }
+                });
+            } else {
+                $('#searchResults').empty();
+            }
+        });
+    });
+</script>
+}

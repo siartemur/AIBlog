@@ -1,0 +1,159 @@
+@model AIBlog.ViewModels.PostDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+
+            <h2 class="mb-3">@Model.Title</h2>
+
+            <p class="text-muted">
+                📁 <strong>@Model.CategoryName</strong> |
+                ✍️ <strong>@Model.AuthorName</strong> |
+                🗓️ @Model.PublishedOn.ToShortDateString()
+            </p>
+
+            @if (!string.IsNullOrEmpty(Model.Image))
+            {
+                <img src="@Model.Image" alt="Blog Görseli" class="img-fluid rounded mb-4" style="max-height: 400px; object-fit: cover;" />
+            }
+
+            <!-- 📌 Açıklama Kartı -->
+            <div class="card p-4 shadow-sm mb-4">
+                <h5 class="mb-3">📄 Açıklama</h5>
+                <p style="word-wrap: break-word; overflow-wrap: break-word;">
+                    @Model.Description
+                </p>
+            </div>
+
+            <!-- 📚 İçerik Kartı -->
+            @if (!string.IsNullOrEmpty(Model.Content))
+            {
+                <div class="card p-4 shadow-sm mb-4">
+                    <h5 class="mb-3">📘 İçerik</h5>
+                    <div style="white-space: pre-line; word-wrap: break-word;">
+                        @Model.Content
+                    </div>
+                </div>
+            }
+
+
+            <hr />
+
+
+            <div class="mb-4">
+                <h5>📌 Etiketler</h5>
+                @if (Model.Tags != null && Model.Tags.Any())
+                {
+                    @foreach (var tag in Model.Tags)
+                    {
+                        var tagText = tag;
+                        var tagColor = "secondary";
+
+                        if (tag.Contains(":"))
+                        {
+                            var parts = tag.Split(":");
+                            tagText = parts[0];
+                            tagColor = parts[1];
+                        }
+
+                        <a asp-action="Index" asp-route-tag="@tagText" class="badge bg-@tagColor me-1 text-decoration-none">
+                            #@tagText
+                        </a>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">Etiket bulunamadı.</span>
+                }
+            </div>
+
+            <hr />
+
+            <div class="mb-4">
+                <h5>💬 Yorumlar</h5>
+                <div id="comments">
+                    @if (Model.Comments.Any())
+                    {
+                        @foreach (var comment in Model.Comments)
+                        {
+                            <div class="d-flex mb-3 shadow-sm p-3 bg-light rounded">
+                                <img src="~/images/profiles/@(comment.User?.ProfileImage ?? "default.jpg")"
+                                     class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;" />
+
+                                <div>
+                                    <div class="fw-bold">@comment.User?.Name</div>
+                                    <div class="text-muted small">@comment.PublishedOn.ToString("dd MMM yyyy HH:mm")</div>
+                                    <p class="mb-0">@Html.Raw(comment.Text)</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Henüz yorum yapılmamış.</p>
+                    }
+                </div>
+            </div>
+
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <form id="commentForm" class="mt-4">
+                    <input type="hidden" name="postId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label for="newCommentText" class="form-label">Yorumunuz</label>
+                        <textarea name="newCommentText" id="newCommentText" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Yorumu Gönder</button>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Yorum yapabilmek için <a asp-controller="Auth" asp-action="Login">giriş yapmalısınız</a>.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#commentForm").submit(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Blog/AddComment",
+                data: $(this).serialize(),
+                success: function (comment) {
+                    const date = new Date(comment.publishedOn);
+                    const imgPath = comment.userImage ? comment.userImage : "default.jpg";
+
+                    $("#comments").prepend(`
+                        <div class="d-flex mb-3 shadow-sm p-3 bg-light rounded">
+                            <img src="/images/profiles/${imgPath}"
+                                 class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;" />
+                            <div>
+                                <div class="fw-bold">${comment.userName}</div>
+                                <div class="text-muted small">${date.toLocaleDateString()}</div>
+                                <p class="mb-0">${comment.text}</p>
+                            </div>
+                        </div>
+                    `);
+
+                    $("#newCommentText").val("");
+                },
+                error: function () {
+                    alert("Yorum eklenirken bir hata oluştu.");
+                }
+            });
+        });
+    </script>
+}

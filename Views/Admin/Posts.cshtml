@@ -1,0 +1,49 @@
+@model IEnumerable<AIBlog.Models.Post>
+
+@{
+    ViewData["Title"] = "Bloglar";
+}
+
+<h2>📃 Tüm Bloglar</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Yazar</th>
+            <th>Tarih</th>
+            <th>Durum</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td>
+                    <a href="/blog/@post.Url" class="fw-bold text-decoration-none">
+                        @post.Title
+                    </a>
+                </td>
+                <td>@post.User?.UserName</td>
+                <td>@post.PublishedOn.ToShortDateString()</td>
+                <td>
+                    @if (post.IsActive)
+                    {
+                        <span class="badge bg-success">Aktif</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Pasif</span>
+                    }
+                </td>
+                <td>
+                    <form asp-action="TogglePostStatus" method="post">
+                        <input type="hidden" name="postId" value="@post.PostId" />
+                        <button type="submit" class="btn btn-sm btn-warning">Durumu Değiştir</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

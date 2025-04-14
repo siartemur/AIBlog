@@ -1,0 +1,45 @@
+@model IEnumerable<AIBlog.Models.Comment>
+
+@{
+    ViewData["Title"] = "Yorum Moderasyonu";
+}
+
+<h2 class="mb-4">💬 Yorum Moderasyonu</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">
+        Henüz yorum bulunmamaktadır.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Kullanıcı</th>
+                <th>Yorum</th>
+                <th>Gönderi</th>
+                <th>Tarih</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comment in Model)
+            {
+                <tr>
+                    <td>@comment.User?.UserName</td>
+                    <td>@comment.Text</td>
+                    <td>@comment.Post?.Title</td>
+                    <td>@comment.PublishedOn.ToShortDateString()</td>
+                    <td>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Yorumu silmek istediğinize emin misiniz?');">
+                            <input type="hidden" name="id" value="@comment.CommentId" />
+                            <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

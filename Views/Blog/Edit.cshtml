@@ -1,0 +1,59 @@
+@model AIBlog.ViewModels.PostFormViewModel
+
+@{
+    ViewData["Title"] = "Blog Düzenle";
+}
+
+<h2>Blog Düzenle</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="PostId" value="@ViewBag.PostId" />
+
+    <div class="form-group mb-3">
+        <label asp-for="Title" class="form-label">Başlık</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Description" class="form-label">Açıklama</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Content" class="form-label">İçerik</label>
+        <textarea asp-for="Content" rows="6" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="TagNames" class="form-label">Etiketler (virgülle ayırınız)</label>
+        <input asp-for="TagNames" class="form-control" placeholder="AI, ML, ChatGPT" />
+        <small class="text-muted">Örn: AI, Yapay Zeka, Derin Öğrenme</small>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="ImageFile" class="form-label">Görsel</label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+        @if (ViewBag.ExistingImage != null)
+        {
+            <div class="mt-2">
+                <img src="@ViewBag.ExistingImage" alt="Görsel" width="150" />
+            </div>
+        }
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="CategoryId" class="form-label">Kategori</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control"></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a asp-action="UserPosts" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,45 @@
+@model IEnumerable<AIBlog.Models.User>
+
+@{
+    ViewData["Title"] = "Kullanıcılar";
+}
+
+<h2>👥 Kullanıcılar</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Kullanıcı Adı</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>
+                    <form asp-action="UpdateRole" method="post" class="d-flex">
+                        <input type="hidden" name="userId" value="@user.UserId" />
+                        <select name="role" class="form-select form-select-sm me-2">
+                            @foreach (var role in Enum.GetValues(typeof(AIBlog.Models.UserRole)))
+                            {
+                                <option value="@role" selected="@(role.ToString() == user.Role.ToString())">@role</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">Güncelle</button>
+                    </form>
+                </td>
+                <td>
+                    <form asp-action="DeleteUser" method="post">
+                        <input type="hidden" name="userId" value="@user.UserId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
