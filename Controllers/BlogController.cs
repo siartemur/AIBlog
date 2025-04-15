@@ -27,8 +27,10 @@ namespace AIBlog.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index(string? tag)
+        public IActionResult Index(string? tag, string? category, int page = 1)
         {
+            int pageSize = 6;
+
             var query = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Category)
@@ -36,11 +38,23 @@ namespace AIBlog.Controllers
                 .Where(p => p.IsActive)
                 .AsQueryable();
 
+            // Etiket (Tag) filtresi
             if (!string.IsNullOrEmpty(tag))
                 query = query.Where(p => p.Tags.Any(t => t.Text == tag));
 
-            var posts = query
+            // ✅ Kategori filtresi
+            if (!string.IsNullOrEmpty(category))
+                query = query.Where(p => p.Category != null && p.Category.Name == category);
+
+            // Sayfalama hesaplaması
+            var totalPosts = query.Count();
+            var totalPages = (int)Math.Ceiling(totalPosts / (double)pageSize);
+
+            // Sayfalı post listesi
+            var pagedPosts = query
                 .OrderByDescending(p => p.PublishedOn)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new PostListViewModel
                 {
                     Id = p.PostId,
@@ -55,9 +69,20 @@ namespace AIBlog.Controllers
                 })
                 .ToList();
 
-            ViewBag.CurrentTag = tag;
-            return View(posts);
+            // ViewModel içine hem kategori hem etiket bilgisi
+            var viewModel = new PostListPageViewModel
+            {
+                Posts = pagedPosts,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                CurrentTag = tag,
+                CurrentCategory = category // ✅ kategori filtresi eklendi
+            };
+
+            return View(viewModel);
         }
+
+
 
         [AllowAnonymous]
         [HttpGet("/blog/{url}")]
@@ -138,7 +163,7 @@ namespace AIBlog.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Post post, IFormFile? ImageFile, string? TagNames)
+        public async Task<IActionResult> Create(PostFormViewModel model)
         {
             var email = User.Identity?.Name;
             var user = await _userService.GetUserByEmailAsync(email!);
@@ -147,29 +172,39 @@ namespace AIBlog.Controllers
             {
                 TempData["ErrorMessage"] = "Kullanıcı bilgisi alınamadı.";
                 ViewBag.Categories = new SelectList(_context.Categories.ToList(), "CategoryId", "Name");
-                return View(post);
+                return View(model);
             }
 
-            post.Url = SlugHelper.GenerateSlug(post.Title!);
+            var post = new Post
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Content = model.Content,
+                Url = SlugHelper.GenerateSlug(model.Title!),
+                UserId = user.UserId,
+                PublishedOn = DateTime.Now,
+                IsActive = true,
+                CategoryId = model.CategoryId
+            };
 
-            if (ImageFile != null && ImageFile.Length > 0)
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/posts");
                 Directory.CreateDirectory(uploadsFolder);
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await ImageFile.CopyToAsync(fileStream);
+                    await model.ImageFile.CopyToAsync(fileStream);
                 }
 
                 post.Image = "/images/posts/" + uniqueFileName;
             }
 
-            if (!string.IsNullOrWhiteSpace(TagNames))
+            if (!string.IsNullOrWhiteSpace(model.TagNames))
             {
-                var tagTexts = TagNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var tagTexts = model.TagNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 foreach (var text in tagTexts)
                 {
                     var existingTag = await _context.Tags.FirstOrDefaultAsync(t => t.Text == text);
@@ -182,17 +217,11 @@ namespace AIBlog.Controllers
                 }
             }
 
-            post.UserId = user.UserId;
-            post.PublishedOn = DateTime.Now;
-            post.IsActive = true;
-            post.User = null!;
-            post.Category = null!;
-
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Lütfen tüm alanları doğru doldurunuz.";
                 ViewBag.Categories = new SelectList(_context.Categories.ToList(), "CategoryId", "Name");
-                return View(post);
+                return View(model);
             }
 
             await _postService.AddPostAsync(post);
@@ -206,13 +235,24 @@ namespace AIBlog.Controllers
             var post = await _postService.GetPostByIdAsync(id);
             if (post == null) return NotFound();
 
+            var model = new PostFormViewModel
+            {
+                Title = post.Title,
+                Description = post.Description,
+                Content = post.Content,
+                CategoryId = post.CategoryId,
+                TagNames = string.Join(", ", post.Tags.Select(t => t.Text))
+            };
+
+            ViewBag.ExistingImage = post.Image;
+            ViewBag.PostId = post.PostId;
             ViewBag.Categories = new SelectList(_context.Categories.ToList(), "CategoryId", "Name", post.CategoryId);
-            return View(post);
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Post post, IFormFile? ImageFile, string? TagNames)
+        public async Task<IActionResult> Edit(int id, PostFormViewModel model)
         {
             var email = User.Identity?.Name;
             var user = await _userService.GetUserByEmailAsync(email!);
@@ -223,60 +263,45 @@ namespace AIBlog.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
-            post.Url = SlugHelper.GenerateSlug(post.Title!);
-
-            if (ImageFile != null && ImageFile.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/posts");
-                Directory.CreateDirectory(uploadsFolder);
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await ImageFile.CopyToAsync(fileStream);
-                }
-
-                post.Image = "/images/posts/" + uniqueFileName;
-            }
-            else
-            {
-                var existingPost = await _context.Posts.AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.PostId == post.PostId);
-                if (existingPost != null)
-                {
-                    post.Image = existingPost.Image;
-                }
-            }
-
-            // 🌟 Postu ve tag ilişkilerini güncelle (EF ile çakışmayı önler)
-            var postToUpdate = await _context.Posts
+            var post = await _context.Posts
                 .Include(p => p.Tags)
-                .FirstOrDefaultAsync(p => p.PostId == post.PostId);
+                .FirstOrDefaultAsync(p => p.PostId == id);
 
-            if (postToUpdate == null)
+            if (post == null)
             {
                 TempData["ErrorMessage"] = "Güncellenecek blog bulunamadı.";
                 return RedirectToAction("Index", "Profile");
             }
 
-            // Temel alanları güncelle
-            postToUpdate.Title = post.Title;
-            postToUpdate.Description = post.Description;
-            postToUpdate.Content = post.Content;
-            postToUpdate.Url = post.Url;
-            postToUpdate.Image = post.Image;
-            postToUpdate.CategoryId = post.CategoryId;
-            postToUpdate.IsActive = true;
-            postToUpdate.PublishedOn = DateTime.Now;
-            postToUpdate.UserId = user.UserId;
+            post.Title = model.Title;
+            post.Description = model.Description;
+            post.Content = model.Content;
+            post.Url = SlugHelper.GenerateSlug(model.Title!);
+            post.CategoryId = model.CategoryId;
+            post.IsActive = true;
+            post.PublishedOn = DateTime.Now;
+            post.UserId = user.UserId;
 
-            // Etiketleri güncelle
-            postToUpdate.Tags.Clear();
-
-            if (!string.IsNullOrWhiteSpace(TagNames))
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
-                var tagTexts = TagNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/posts");
+                Directory.CreateDirectory(uploadsFolder);
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(fileStream);
+                }
+
+                post.Image = "/images/posts/" + uniqueFileName;
+            }
+
+            post.Tags.Clear();
+
+            if (!string.IsNullOrWhiteSpace(model.TagNames))
+            {
+                var tagTexts = model.TagNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 foreach (var text in tagTexts)
                 {
                     var existingTag = await _context.Tags.FirstOrDefaultAsync(t => t.Text == text);
@@ -286,23 +311,25 @@ namespace AIBlog.Controllers
                         _context.Tags.Add(existingTag);
                     }
 
-                    if (!postToUpdate.Tags.Any(t => t.Text == existingTag.Text))
+                    if (!post.Tags.Any(t => t.Text == existingTag.Text))
                     {
-                        postToUpdate.Tags.Add(existingTag);
+                        post.Tags.Add(existingTag);
                     }
                 }
             }
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = new SelectList(_context.Categories.ToList(), "CategoryId", "Name", post.CategoryId);
-                return View(post);
+                ViewBag.Categories = new SelectList(_context.Categories.ToList(), "CategoryId", "Name", model.CategoryId);
+                ViewBag.ExistingImage = post.Image;
+                return View(model);
             }
 
-            await _context.SaveChangesAsync(); // doğrudan context üzerinden
+            await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Blogunuz başarıyla güncellendi.";
             return RedirectToAction("Index", "Profile");
         }
+
 
 
         [HttpGet]
