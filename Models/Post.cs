@@ -12,10 +12,10 @@ namespace AIBlog.Models
         public bool IsActive { get; set; }
 
         public int UserId { get; set; }
-        public User? User { get; set; }  // ✅ Nullable yapıldı
+        public User? User { get; set; }  
 
         public int CategoryId { get; set; }
-        public Category? Category { get; set; } // ✅ Nullable yapıldı
+        public Category? Category { get; set; } 
 
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public List<Comment> Comments { get; set; } = new List<Comment>();

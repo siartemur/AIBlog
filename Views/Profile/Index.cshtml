@@ -1,4 +1,4 @@
-@model (AIBlog.Models.User, List<AIBlog.Models.Post>)
+@model (AIBlog.Models.User, IEnumerable<AIBlog.Models.Post>)
 
 @{
     ViewData["Title"] = "Profilim";
@@ -31,7 +31,8 @@
 }
 
 <div class="mb-4">
-    <a asp-controller="Blog" asp-action="Create" class="btn btn-success">Yeni Blog Paylaş</a>
+    <a asp-controller="Blog" asp-action="Create" class="btn btn-success me-2">Yeni Blog Paylaş</a>
+    <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-outline-secondary">🔐 Şifre Değiştir</a>
 </div>
 
 @if (!posts.Any())

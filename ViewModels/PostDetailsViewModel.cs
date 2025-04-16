@@ -14,7 +14,7 @@ namespace AIBlog.ViewModels
         public string CategoryName { get; set; } = null!;
         public List<string> Tags { get; set; } = new();
 
-        public List<Comment> Comments { get; set; } = new(); // ✅ doğru tanım
-        public string? NewCommentText { get; set; } // istersen bırakabilirsin
+        public List<Comment> Comments { get; set; } = new(); 
+        public string? NewCommentText { get; set; } 
     }
 }

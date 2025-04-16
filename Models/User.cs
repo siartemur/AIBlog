@@ -19,7 +19,7 @@ namespace AIBlog.Models
         public string? Image { get; set; }
         public string? ProfileImage { get; set; } 
 
-        public UserRole Role { get; set; } = UserRole.User; // 👈 EKLENDİ
+        public UserRole Role { get; set; } = UserRole.User; 
 
         public List<Post> Posts { get; set; } = new List<Post>();
         public List<Comment> Comments { get; set; } = new List<Comment>();

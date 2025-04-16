@@ -1,5 +1,5 @@
-@model AIBlog.ViewModels.PostDetailsViewModel
 
+@model AIBlog.ViewModels.PostDetailsViewModel
 @{
     ViewData["Title"] = Model.Title;
 }
@@ -21,7 +21,7 @@
                 <img src="@Model.Image" alt="Blog Görseli" class="img-fluid rounded mb-4" style="max-height: 400px; object-fit: cover;" />
             }
 
-            <!-- 📌 Açıklama Kartı -->
+            <!-- Açıklama Kartı -->
             <div class="card p-4 shadow-sm mb-4">
                 <h5 class="mb-3">📄 Açıklama</h5>
                 <p style="word-wrap: break-word; overflow-wrap: break-word;">
@@ -29,7 +29,7 @@
                 </p>
             </div>
 
-            <!-- 📚 İçerik Kartı -->
+            <!-- İçerik Kartı -->
             @if (!string.IsNullOrEmpty(Model.Content))
             {
                 <div class="card p-4 shadow-sm mb-4">

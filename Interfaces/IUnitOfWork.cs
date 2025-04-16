@@ -1,5 +1,5 @@
-using AIBlog.Interfaces; // ← Bu YOKSA 'IRepository<>' görünmez!
-using AIBlog.Models;     // ← Bu da yoksa 'Post', 'User' görünmez!
+using AIBlog.Models;
+using AIBlog.Interfaces;
 
 public interface IUnitOfWork
 {
@@ -9,5 +9,5 @@ public interface IUnitOfWork
     IRepository<Comment> Comments { get; }
     IRepository<Category> Categories { get; }
 
-    Task<int> CompleteAsync(); // SaveChanges burada
+    Task<int> CompleteAsync();
 }

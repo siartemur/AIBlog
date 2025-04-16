@@ -7,4 +7,6 @@ public interface IUserService
     Task<User?> GetUserByIdAsync(int id);
     Task<User?> GetUserByEmailAsync(string email);
     Task AddUserAsync(User user);
+    Task DeleteUserAsync(int userId);
+    Task<bool> ChangePasswordAsync(string email, string currentPassword, string newPassword);
 }

@@ -1,4 +1,3 @@
-// ✅ Güncellenmiş EditorController.cs
 using AIBlog.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +8,10 @@ namespace AIBlog.Controllers
     public class EditorController : Controller
     {
         private readonly ICommentService _commentService;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public EditorController(ICommentService commentService, IUnitOfWork unitOfWork)
+        public EditorController(ICommentService commentService)
         {
             _commentService = commentService;
-            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
@@ -31,8 +28,7 @@ namespace AIBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _unitOfWork.Comments.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
+            await _commentService.DeleteCommentAsync(id);
             return RedirectToAction("ModerateComments");
         }
     }

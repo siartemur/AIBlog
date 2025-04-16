@@ -75,12 +75,15 @@ using (var scope = app.Services.CreateScope())
 
 // 🌐 Route Tanımları
 
-// 📌 Varsayılan route (önce gelmeli!)
+app.MapControllerRoute(
+    name: "category-list",
+    pattern: "Category",
+    defaults: new { controller = "Blog", action = "Category" });
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// 📌 SEO uyumlu blog detay slug route (en son!)
 app.MapControllerRoute(
     name: "blog-details",
     pattern: "blog/{url}",

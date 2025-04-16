@@ -1,8 +1,7 @@
-using AIBlog.Data;           // AppDbContext için
-using AIBlog.Models;         // Post, User, Tag, vb.
-using AIBlog.Interfaces;     // IRepository, IUnitOfWork, IService interface'leri
+using AIBlog.Data;
+using AIBlog.Models;
+using AIBlog.Interfaces;
 using AIBlog.Services.Repository;
-
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -24,8 +23,5 @@ public class UnitOfWork : IUnitOfWork
         Categories = new Repository<Category>(_context);
     }
 
-    public async Task<int> CompleteAsync()
-    {
-        return await _context.SaveChangesAsync();
-    }
+    public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();
 }

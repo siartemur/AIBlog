@@ -1,3 +1,4 @@
+using AIBlog.ViewModels;
 using AIBlog.Models;
 
 public interface ICommentService
@@ -7,4 +8,5 @@ public interface ICommentService
     Task<Comment?> GetCommentByIdAsync(int id);
     Task AddCommentAsync(Comment comment);
     Task DeleteCommentAsync(int id);
+    Task<CommentJsonViewModel?> AddCommentAsync(string email, int postId, string commentText);
 }

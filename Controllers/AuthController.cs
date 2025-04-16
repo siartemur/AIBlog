@@ -1,7 +1,6 @@
 using AIBlog.Interfaces;
 using AIBlog.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -17,14 +16,12 @@ namespace AIBlog.Controllers
             _userService = userService;
         }
 
-        // GET: /Auth/Login
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Auth/Login
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
@@ -35,7 +32,6 @@ namespace AIBlog.Controllers
                 return View();
             }
 
-            // Claims oluştur
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email ?? string.Empty),
@@ -49,14 +45,12 @@ namespace AIBlog.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Auth/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Auth/Register
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password, string userName, IFormFile? ProfileImage)
         {
@@ -75,7 +69,7 @@ namespace AIBlog.Controllers
                 var fileName = Guid.NewGuid().ToString() + extension;
                 var savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/profiles", fileName);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(savePath)!); // klasör yoksa oluştur
+                Directory.CreateDirectory(Path.GetDirectoryName(savePath)!);
                 using (var stream = new FileStream(savePath, FileMode.Create))
                 {
                     await ProfileImage.CopyToAsync(stream);
@@ -90,27 +84,24 @@ namespace AIBlog.Controllers
                 Password = password,
                 UserName = userName,
                 Role = UserRole.User,
-                ProfileImage = profileImageFileName // 👈 Profil fotoğrafı burada atanıyor
+                ProfileImage = profileImageFileName
             };
 
             await _userService.AddUserAsync(newUser);
             return RedirectToAction("Login");
         }
 
-
-        // GET: /Auth/Logout
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("UserAuth");
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Auth/AccessDenied
         [HttpGet]
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {
-            return View(); // Yetkisi olmayan kullanıcı buraya yönlendirilir
+            return View();
         }
     }
 }

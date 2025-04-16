@@ -4,21 +4,11 @@ using AIBlog.Models;
 public class TagService : ITagService
 {
     private readonly IUnitOfWork _unitOfWork;
+    public TagService(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
-    public TagService(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
+    public async Task<IEnumerable<Tag>> GetAllTagsAsync() => await _unitOfWork.Tags.GetAllAsync();
 
-    public async Task<IEnumerable<Tag>> GetAllTagsAsync()
-    {
-        return await _unitOfWork.Tags.GetAllAsync();
-    }
-
-    public async Task<Tag?> GetTagByIdAsync(int id)
-    {
-        return await _unitOfWork.Tags.GetByIdAsync(id);
-    }
+    public async Task<Tag?> GetTagByIdAsync(int id) => await _unitOfWork.Tags.GetByIdAsync(id);
 
     public async Task AddTagAsync(Tag tag)
     {
@@ -28,7 +18,7 @@ public class TagService : ITagService
 
     public async Task UpdateTagAsync(Tag tag)
     {
-        _unitOfWork.Tags.Update(tag); // ✅ async değil
+        _unitOfWork.Tags.Update(tag);
         await _unitOfWork.CompleteAsync();
     }
 

@@ -1,5 +1,4 @@
 using AIBlog.Interfaces;
-using AIBlog.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,29 +19,18 @@ namespace AIBlog.Controllers
         public async Task<IActionResult> Index()
         {
             var email = User.Identity?.Name;
-            if (email == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
+            if (email == null) return RedirectToAction("Login", "Auth");
 
             var user = await _userService.GetUserByEmailAsync(email);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
+            if (user == null) return RedirectToAction("Login", "Auth");
 
-            var posts = await _postService.GetAllPostsAsync();
-            var myPosts = posts.Where(p => p.UserId == user.UserId).ToList();
-
-            var model = (user, myPosts);
+            var posts = await _postService.GetPostsByUserEmailAsync(email);
+            var model = (user, posts);
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult ChangePassword()
-        {
-            return View();
-        }
+        public IActionResult ChangePassword() => View();
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
@@ -54,10 +42,7 @@ namespace AIBlog.Controllers
             }
 
             var email = User.Identity?.Name;
-            if (email == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
+            if (email == null) return RedirectToAction("Login", "Auth");
 
             var user = await _userService.GetUserByEmailAsync(email);
             if (user == null || user.Password != currentPassword)
@@ -68,7 +53,6 @@ namespace AIBlog.Controllers
 
             user.Password = newPassword;
             await _userService.UpdateUserAsync(user);
-
             TempData["SuccessMessage"] = "Şifre başarıyla güncellendi.";
             return RedirectToAction("Index");
         }

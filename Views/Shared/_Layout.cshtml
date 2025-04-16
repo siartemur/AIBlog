@@ -37,6 +37,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Blog" asp-action="Index">Bloglar</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Category" asp-action="Index">Kategoriler</a>
+                        </li>
                     </ul>
 
                     <ul class="navbar-nav">
@@ -79,7 +82,6 @@
                             </li>
                         }
 
-                        <!-- İletişim linki herkes için -->
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Contact">İletişim</a>
                         </li>
@@ -89,14 +91,12 @@
         </nav>
     </header>
 
-    <!-- Ana içerik -->
     <div class="container mt-4">
         <main role="main" class="pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-light text-muted py-4 mt-5 border-top">
         <div class="container text-center">
             &copy; @DateTime.Now.Year - <strong>AIBlog</strong> | Yapay Zeka Dünyasına Açılan Kapı

@@ -7,8 +7,6 @@ namespace AIBlog.ViewModels
         public int TotalPages { get; set; }
 
         public string? CurrentTag { get; set; }
-
-        // ✅ Yeni eklenen alan: aktif kategori filtresi
         public string? CurrentCategory { get; set; }
     }
 }

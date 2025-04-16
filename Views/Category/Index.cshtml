@@ -1,0 +1,31 @@
+@model IEnumerable<AIBlog.Models.Category>
+
+@{
+    ViewData["Title"] = "Kategoriler";
+}
+
+<h2 class="mb-4">📂 Kategoriler</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">Henüz kategori eklenmemiş.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var category in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-primary">@category.Name</h5>
+                        <p class="card-text text-muted">Kategoriye ait yazıları görüntüle.</p>
+                        <a asp-controller="Blog" asp-action="Index" asp-route-category="@category.Name" class="btn btn-outline-primary mt-auto">
+                            Yazıları Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

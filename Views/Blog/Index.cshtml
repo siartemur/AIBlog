@@ -1,11 +1,29 @@
 @model AIBlog.ViewModels.PostListPageViewModel
-
 @{
     ViewData["Title"] = "Bloglar";
 }
 
 <h2 class="mb-4">📚 Tüm Bloglar</h2>
 
+<!-- ✅ Kategori Listesi -->
+@if (ViewBag.Categories != null)
+{
+    <div class="mb-4">
+        <h5 class="fw-bold">📁 Kategoriler</h5>
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var category in ViewBag.Categories)
+            {
+                <a asp-action="Index"
+                   asp-route-category="@category.Name"
+                   class="badge bg-secondary text-decoration-none">
+                    @category.Name
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<!-- ✅ Aktif filtre bilgisi -->
 @if (Model.CurrentTag != null || Model.CurrentCategory != null)
 {
     <div class="alert alert-info d-flex justify-content-between align-items-center">
@@ -43,7 +61,6 @@ else
                         <p class="card-text text-muted" style="min-height: 60px;">@post.Description</p>
 
                         <p class="text-muted small mb-2">
-                            <!-- ✅ Kategoriye tıklanabilir filtre -->
                             📁 <a asp-action="Index" asp-route-category="@post.CategoryName" class="text-decoration-none">
                                 <strong>@post.CategoryName</strong>
                             </a><br />

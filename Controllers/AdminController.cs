@@ -1,4 +1,3 @@
-// ✅ Güncellenmiş AdminController.cs
 using AIBlog.Interfaces;
 using AIBlog.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,13 +10,11 @@ namespace AIBlog.Controllers
     {
         private readonly IUserService _userService;
         private readonly IPostService _postService;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public AdminController(IUserService userService, IPostService postService, IUnitOfWork unitOfWork)
+        public AdminController(IUserService userService, IPostService postService)
         {
             _userService = userService;
             _postService = postService;
-            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index() => View();
@@ -33,17 +30,19 @@ namespace AIBlog.Controllers
         {
             var user = await _userService.GetUserByIdAsync(userId);
             if (user == null) return NotFound();
+
             user.Role = role;
-            _unitOfWork.Users.Update(user);
-            await _unitOfWork.CompleteAsync();
+            await _userService.UpdateUserAsync(user);
             return RedirectToAction("Users");
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteUser(int userId)
         {
-            await _unitOfWork.Users.DeleteAsync(userId);
-            await _unitOfWork.CompleteAsync();
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            await _userService.DeleteUserAsync(userId);
             return RedirectToAction("Users");
         }
 
@@ -58,9 +57,9 @@ namespace AIBlog.Controllers
         {
             var post = await _postService.GetPostByIdAsync(postId);
             if (post == null) return NotFound();
+
             post.IsActive = !post.IsActive;
-            _unitOfWork.Posts.Update(post);
-            await _unitOfWork.CompleteAsync();
+            await _postService.UpdatePostAsync(post);
             return RedirectToAction("Posts");
         }
     }

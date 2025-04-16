@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using AIBlog.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
 
 namespace AIBlog.Data
 {
@@ -11,7 +9,6 @@ namespace AIBlog.Data
         {
         }
 
-        // DbSet tanımları
         public DbSet<User> Users => Set<User>();
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<Tag> Tags => Set<Tag>();
@@ -33,28 +30,28 @@ namespace AIBlog.Data
                 .HasMany(u => u.Posts)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // ✅ 1:N - User --> Comment (Çakışmayı önlemek için Cascade yerine Restrict)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Comments)
-                .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade); // Kullanıcı silinirse postlar da silinir
 
             // 1:N - Post --> Comment
             modelBuilder.Entity<Post>()
                 .HasMany(p => p.Comments)
                 .WithOne(c => c.Post)
                 .HasForeignKey(c => c.PostId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Post silinirse yorumlar da silinir
+
+            // 🔁 1:N - User --> Comment (çakışmayı önlemek için Cascade yerine Restrict)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Comments)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Direkt kullanıcı silinince yorumlar silinmez
 
             // N:1 - Post --> Category
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Posts)
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); // kategorisi silinemez
 
             // Enum: TagColors --> string olarak saklansın
             modelBuilder.Entity<Tag>()
