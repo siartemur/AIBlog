@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔌 Razor + MVC
+// Razor + MVC
 builder.Services.AddControllersWithViews();
 
-// 🔐 Cookie Authentication + Yetkilendirme
+// Cookie Authentication + Yetkilendirme
 builder.Services.AddAuthentication("UserAuth")
     .AddCookie("UserAuth", options =>
     {
@@ -22,7 +22,7 @@ builder.Services.AddAuthentication("UserAuth")
 
 builder.Services.AddAuthorization();
 
-// 🔗 Veritabanı bağlantısı
+// Veritabanı bağlantısı
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var provider = builder.Configuration["DatabaseProvider"];
@@ -38,11 +38,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 
-// 💡 Generic Repository + Unit of Work
+// Generic Repository + Unit of Work
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// 🧠 Servis Katmanları
+// Servis Katmanları
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
@@ -65,7 +65,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 🧬 Seed işlemi – DB migrate + ilk veri
+// Seed işlemi – DB migrate + ilk veri
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -73,7 +73,7 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(context);
 }
 
-// 🌐 Route Tanımları
+// Route Tanımları
 
 app.MapControllerRoute(
     name: "category-list",
