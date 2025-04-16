@@ -41,7 +41,7 @@ public class CommentService : ICommentService
         var comment = new Comment
         {
             Text = commentText,
-            PublishedOn = DateTime.Now,
+            PublishedOn = DateTime.UtcNow,
             PostId = postId,
             UserId = user.UserId
         };

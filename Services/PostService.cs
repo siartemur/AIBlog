@@ -114,7 +114,7 @@ public class PostService : IPostService
             Content = model.Content,
             Url = SlugHelper.GenerateSlug(model.Title!),
             UserId = currentUser.UserId,
-            PublishedOn = DateTime.Now,
+            PublishedOn = DateTime.UtcNow,
             IsActive = true,
             CategoryId = model.CategoryId
         };
@@ -159,7 +159,7 @@ public class PostService : IPostService
         post.Content = model.Content;
         post.Url = SlugHelper.GenerateSlug(model.Title!);
         post.CategoryId = model.CategoryId;
-        post.PublishedOn = DateTime.Now;
+        post.PublishedOn = DateTime.UtcNow;
 
         if (model.ImageFile != null && model.ImageFile.Length > 0)
         {

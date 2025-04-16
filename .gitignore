@@ -20,17 +20,8 @@ obj/
 Thumbs.db
 
 # libman / npm / nuget
-lib/
 node_modules/
-wwwroot/lib/
 
-# wwwroot içindeki kullanıcı yüklemeleri
-wwwroot/images/posts/
-wwwroot/images/profiles/
-
-# Secrets ve configler
-secrets.json
-.env
-
-# Local veritabanı dosyaları (SQLite veya local db cache)
+# Local veritabanı dosyaları
 *.db
+.idea

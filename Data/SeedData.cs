@@ -47,8 +47,8 @@ namespace AIBlog.Data
                 Content = "ChatGPT artık kod da yazıyor!",
                 Description = "Yapay zeka destekli üretkenlik",
                 Url = SlugHelper.GenerateSlug("ChatGPT ile Proje Geliştirme"),
-                Image = "post1.jpg",
-                PublishedOn = DateTime.Now.AddDays(-10),
+                Image = "~/images/post1.jpg",
+                PublishedOn = DateTime.UtcNow.AddDays(-10),
                 IsActive = true,
                 User = admin,
                 Category = categories[0],
@@ -61,8 +61,8 @@ namespace AIBlog.Data
                 Content = "ML temel kavramlar...",
                 Description = "Yeni başlayanlar için ML",
                 Url = SlugHelper.GenerateSlug("Makine Öğrenimine Giriş"),
-                Image = "post2.jpg",
-                PublishedOn = DateTime.Now.AddDays(-5),
+                Image = "~/images/post2.jpg",
+                PublishedOn = DateTime.UtcNow.AddDays(-5),
                 IsActive = true,
                 User = user,
                 Category = categories[1],
@@ -75,8 +75,8 @@ namespace AIBlog.Data
                 Content = "Convolutional Neural Networks...",
                 Description = "Görüntü işleme alanında derin öğrenme",
                 Url = SlugHelper.GenerateSlug("Deep Learning ile Görüntü İşleme"),
-                Image = "post3.jpg",
-                PublishedOn = DateTime.Now.AddDays(-2),
+                Image = "~/images/post3.jpg",
+                PublishedOn = DateTime.UtcNow.AddDays(-2),
                 IsActive = false, // Pasif
                 User = editor,
                 Category = categories[2],
@@ -90,7 +90,7 @@ namespace AIBlog.Data
             var comment1 = new Comment
             {
                 Text = "Çok faydalı içerik!",
-                PublishedOn = DateTime.Now.AddDays(-8),
+                PublishedOn = DateTime.UtcNow.AddDays(-8),
                 Post = post1,
                 User = user
             };
@@ -98,7 +98,7 @@ namespace AIBlog.Data
             var comment2 = new Comment
             {
                 Text = "ML konusunu sade ve anlaşılır anlatmışsınız.",
-                PublishedOn = DateTime.Now.AddDays(-4),
+                PublishedOn = DateTime.UtcNow.AddDays(-4),
                 Post = post2,
                 User = editor
             };

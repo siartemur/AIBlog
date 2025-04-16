@@ -25,16 +25,8 @@ builder.Services.AddAuthorization();
 // Veritabanı bağlantısı
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var provider = builder.Configuration["DatabaseProvider"];
-
-    if (provider == "Postgres")
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
-    }
-    else // default SQL Server
-    {
+    var provider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    }
 });
 
 

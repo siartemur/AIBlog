@@ -13,8 +13,9 @@ namespace AIBlog.Data
                 .AddJsonFile("appsettings.json")
                 .Build();
 
+          
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+                 optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
 
             return new AppDbContext(optionsBuilder.Options);
         }

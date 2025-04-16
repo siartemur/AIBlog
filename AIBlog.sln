@@ -3,6 +3,7 @@
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIBlog", "AIBlog.csproj", "{7499755B-1783-E761-DC99-E6C8E976DD90}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +15,10 @@ Global
 		{7499755B-1783-E761-DC99-E6C8E976DD90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7499755B-1783-E761-DC99-E6C8E976DD90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7499755B-1783-E761-DC99-E6C8E976DD90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{913619B2-8441-44E4-8875-056F1495832A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{913619B2-8441-44E4-8875-056F1495832A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{913619B2-8441-44E4-8875-056F1495832A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{913619B2-8441-44E4-8875-056F1495832A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
